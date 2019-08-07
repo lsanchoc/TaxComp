@@ -730,7 +730,7 @@ function drawOnlyText(node,initialY,finalY,options,xpos,ypos, isRight,node_text_
 				}
 				
 				focusNode = node;
-				//console.log(focusNode);
+				console.log(focusNode);
 				//console.log(focusClick);
 				forceRenderUpdate(initOptions);
 
