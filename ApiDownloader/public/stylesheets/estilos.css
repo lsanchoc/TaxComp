@@ -19,7 +19,7 @@ h1{
 
 #label{
   color: white;
-  font-size: 12pt;
+  font-size: 16pt;
 
 }
 
@@ -40,10 +40,17 @@ h1{
   left: 20px;
   top: 0px;
   color: white;
-  font-size: 8px;
+  font-size: 16px;
 }
 
-.file_input{
+.file_input::-webkit-file-upload-button {
+  visibility: hidden;
+}
+
+
+.file_input::before{
+  visibility: hidden;
+  content: 'Select a fileee';
   width: 80%;
   font-size: 16pt;
   text-align: left;
@@ -52,7 +59,9 @@ h1{
   margin-bottom: 3%;
   text-align: left;
   margin-left: 0%;
-
+  cursor: pointer;
+  -webkit-user-select: none;
+  white-space: nowrap;
 }
 
 .file_input:hover{
