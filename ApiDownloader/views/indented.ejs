@@ -113,23 +113,28 @@
 		</div>
 
 		<!-- <button type="button" class="matrix"  onclick="onMatrixClicked()"> <img src = "/images/matrixButton.png" ></img></button>-->
-		<button type="button" class="matrix"  onclick="onMatrixClicked()"></button>
-	
+		<button class="buttonsHeader" onclick="onExpand()">Matrix</button>
+		<!--Function comes from drawing system -->
 		<!--Function comes from ordering menu script -->
 		<button type=“button” class="buttonsHeader" onclick="onSalir()">Exit</button>
 
 	</div>
 
 	<div class="main_body left top">
+		<!--<br>
+		<label>Statistics</label>-->
 		<br>
-		<label>Statistics</label>
-		<br><br>
-		<table id="table_taxon_id" class="table_stadistic">
+		<table id="table_title" class="table_statistic">
 		</table>
 		<br>
 		<hr class="separator">
 		<br>
-		<table id="table_rank_id" class="table_stadistic">
+		<table id="table_taxon_id" class="table_statistic">
+		</table>
+		<br>
+		<hr class="separator">
+		<br>
+		<table id="table_rank_id" class="table_statistic">
 		</table>
 
 		<div id="sketch-holder" class="main_body right top">

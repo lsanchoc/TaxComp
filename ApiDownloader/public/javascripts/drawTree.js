@@ -25,7 +25,7 @@ calculate_all_merges(levelList, levelList2);
 console.log(treeTax);
 console.log(treeTax2);
 
-document.getElementById('table_taxon_id').innerHTML =
+document.getElementById('table_title').innerHTML = 
     '<tr><th></th><th>' +
     tree.name +
     '</th><th>' +
@@ -39,11 +39,15 @@ document.getElementById('table_taxon_id').innerHTML =
     tree2.author +
     ' - ' +
     tree2.date +
-    '</th></tr>' +
+    '</th></tr>';
+
+
+document.getElementById('table_taxon_id').innerHTML =
+
     '<tr><th>Rank</th><th>' +
-    tree.accesDate +
+    treeTax.r +
     '</th><th>' +
-    tree2.accesDate +
+    treeTax2.r +
     '</th></tr>' +
     (treeTax.totalKingdom != null
         ? '<tr> <th>Kingdom</th><th>' +
@@ -89,6 +93,8 @@ document.getElementById('table_taxon_id').innerHTML =
     formatNumber(treeTax2.desendece) +
     '</th> </tr>';
 
+
+
 var totalChanges =
     treeTax.totalSplits +
     treeTax.totalMerges +
@@ -105,20 +111,6 @@ var totalChanges2 =
     treeTax2.totalRemoves;
 
 document.getElementById('table_rank_id').innerHTML =
-    '<tr><th>Changes</th><th>' +
-    tree.name +
-    '</th><th>' +
-    tree2.name +
-    '</th></tr>' +
-    '<tr><th>        </th><th>' +
-    tree.author +
-    ' - ' +
-    tree.date +
-    '</th><th>' +
-    tree2.author +
-    ' - ' +
-    tree2.date +
-    '</th></tr>' +
     '<tr><th>        </th><th>' +
     tree.accesDate +
     '</th><th>' +
@@ -171,6 +163,7 @@ document.getElementById('table_rank_id').innerHTML =
     '%' +
     formatNumber((totalChanges2 * 100) / treeTax2.totalSpecies) +
     '</th></tr>';
+
 
 //checks if bot trees are valid for visualization
 //this treeTax comes from a file selected by the user and is modified by preprocesamiento.js and contChildren.js
