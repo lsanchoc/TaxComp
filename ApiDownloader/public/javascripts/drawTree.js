@@ -72,9 +72,9 @@ document.getElementById('table_taxon_id').innerHTML =
         : '') +
     (treeTax.totalFamily != null
         ? '<tr> <th>Family</th><th>' +
-          formatNumber(treeTax.totalFamily) +
+          formatNumber(treeTax.totalFamily + treeTax.totalSuperfamily) +
           '</th><th>' +
-          formatNumber(treeTax2.totalFamily) +
+          formatNumber(treeTax2.totalFamily + treeTax2.totalSuperfamily) +
           '</th> </tr>'
         : '') +
     ('<tr> <th>Genus</th><th>' +
@@ -112,14 +112,14 @@ var totalChanges2 =
 
 document.getElementById('table_rank_id').innerHTML =
     '<tr><th>        </th><th>' +
-    tree.accesDate +
-    '</th><th>' +
-    tree2.accesDate +
-    '</th></tr>' +
-    '<tr><th>Synonyms</th><th>' +
     tree.name +
     '</th><th>' +
     tree2.name +
+    '</th></tr>' +
+    '<tr><th>Synonyms</th><th>' +
+    treeTax.equivalent.length +
+    '</th><th>' +
+    treeTax2.equivalent.length +
     '</th> </tr>' +
     '<tr><th>Split</th><th>' +
     formatNumber(treeTax.totalSplits) +
@@ -155,14 +155,7 @@ document.getElementById('table_rank_id').innerHTML =
     formatNumber(totalChanges) +
     '</th><th>' +
     formatNumber(totalChanges2) +
-    '</th></tr>' +
-    '<tr><th>% changed</th><th>' +
-    '%' +
-    formatNumber((totalChanges * 100) / treeTax.totalSpecies) +
-    '</th><th>' +
-    '%' +
-    formatNumber((totalChanges2 * 100) / treeTax2.totalSpecies) +
-    '</th></tr>';
+    '</th></tr>'
 
 
 //checks if bot trees are valid for visualization
@@ -940,7 +933,7 @@ function drawOnlyText(
                     node.equivalent[0].totalRemoves;
 
                 document.getElementById('table_rank_id').innerHTML =
-                    '<tr><th>Changes</th><th>' +
+                    '<tr><th></th><th>' +
                     node.n +
                     '</th><th>' +
                     node.equivalent[0].n +
@@ -1000,16 +993,7 @@ function drawOnlyText(
                     formatNumber(totalChanges) +
                     '</th><th>' +
                     formatNumber(totalChanges2) +
-                    '</th></tr>' +
-                    '<tr><th>% changed</th><th>' +
-                    '%' +
-                    formatNumber((totalChanges * 100) / node.desendece) +
-                    '</th><th>' +
-                    '%' +
-                    formatNumber(
-                        (totalChanges2 * 100) / treeTax2.totalSpecies
-                    ) +
-                    '</th></tr>';
+                    '</th></tr>'
 
                 //console.log(node.n, node.y , findOpen(node.equivalent[0]).y);
             }

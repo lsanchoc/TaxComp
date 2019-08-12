@@ -70,8 +70,8 @@ body {
   color: #222222;
   border-bottom: 1px solid #999999;
   left-padding: 8px;
-  width: 80%;
-  margin-left: 7%;
+  width: 90%;
+  margin-left: 5%;
 }
 
 th, td {
@@ -161,7 +161,7 @@ p{
   display: inline-grid;
   padding: 0px;
   margin-right: 8px;
-  font-size: 12px;
+  font-size: 13px;
   color: white;
   position:relative;
   width: 4.7%;
