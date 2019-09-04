@@ -1045,7 +1045,7 @@ function drawOnlyText(
     let size = node.totalSpecies ? node.totalSpecies : '';
     let displayText = node.r + ':' + node.n + ' ' + size; //text displayed as node name
     node.tw = textWidth(displayText); //update textwidht required on other modules
-    text(displayText + "------" + node.p, node.x + 5 + xpos, ypos + node.y + 15); //draw the text !!!!
+    text(displayText, node.x + 5 + xpos, ypos + node.y + 15); //draw the text !!!!
     textSize(options.text_size);
 }
 
