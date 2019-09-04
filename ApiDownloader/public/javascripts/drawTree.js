@@ -6,8 +6,9 @@
  * -Lines not being displayed on infraespecies
  */
 
-//var trree = JSON.parse(sessionStorage.getItem("sessionTree1")).taxonomy;
-//var trree2 = JSON.parse(sessionStorage.getItem("sessionTree2")).taxonomy;
+//this flag is changed to enable or disable graphical testing functions
+ var TESTING = false;
+
 
 var tree = JSON.parse(sessionStorage.getItem('sessionTree1'));
 var tree2 = JSON.parse(sessionStorage.getItem('sessionTree2'));
@@ -343,6 +344,7 @@ function setup() {
     console.log(filter.getClosestKey('treu'));
     console.log(filter.getTopNKeys(3, 'treu'));
     console.log(filter.queryTaxons(null, 'treu'));
+
 }
 
 //processing function to detect mouse wheel movement used to move the visualization
@@ -475,7 +477,6 @@ function initializeIndentedTree(originalTree, options, growDirection) {
     calculateCordinates(originalTree, options, 0, 0);
 
     //add treeTax root to render
-    originalTree.visible_lbr[originalTree.r.toLowerCase()].push(originalTree);
     pushIntoUnfolded(originalTree);
     originalTree.c.forEach(function(child_node) {
         pushIntoUnfolded(child_node);
@@ -623,15 +624,11 @@ function foldNode(node, options) {
     node.c.forEach(
         //removes node and it's children from render, and closes them if needed
         function(child_node) {
-            proccesByLevelConditional(
-                child_node,
-                function(actual) {
-                    actual.collapsed = true;
-                    popFromUnfolded(child_node);
-                },
-                'collapsed',
-                false
-            );
+            if(child_node.collapsed === false){
+                foldNode(child_node);
+            }
+            popFromUnfolded(child_node);
+                
         }
     );
 }
@@ -675,7 +672,21 @@ function optimizedDrawIndentedTree(listByRank, options, xpos, ypos, isRight) {
             ypos,
             isRight
         );
+        //test rank list order
+        if(TESTING){
+            var passed = testNodeArrayOrder(currentRankList);
+            if(!passed){
+                console.log(rankName," failed on consistency test, nodes are disordered");
+            }
+            passed = testNodeOverlaping(currentRankList);
+            if(!passed){
+                console.log(rankName," failed on consistency test, nodes are overlaping");
+            }
+
+        }
     });
+
+
 
     //console.log("Total draw nodes on render: ", totalDrawnNodes);
 }
@@ -790,6 +801,11 @@ function drawHierarchyLevel(taxons, options, pointer, xpos, ypos, isRight) {
         if (node.y > pointer + windowHeight * totalCanvasHeight) {
             break;
         }
+
+    //run tests for each node
+    /*if(TESTING){
+        testChildConsistency(node);
+    }*/
     }
 
     //console.log("amount of draw calls from render:",draws);
@@ -1029,7 +1045,7 @@ function drawOnlyText(
     let size = node.totalSpecies ? node.totalSpecies : '';
     let displayText = node.r + ':' + node.n + ' ' + size; //text displayed as node name
     node.tw = textWidth(displayText); //update textwidht required on other modules
-    text(displayText, node.x + 5 + xpos, ypos + node.y + 15); //draw the text !!!!
+    text(displayText + "------" + node.p, node.x + 5 + xpos, ypos + node.y + 15); //draw the text !!!!
     textSize(options.text_size);
 }
 
@@ -1132,6 +1148,7 @@ function toggleNode(node, isRight) {
         };
     } else {
         foldNode(node);
+
         cleaning_function = undefined;
     }
     changed = true;
@@ -1445,34 +1462,46 @@ function drawResumeBars(node, initialY, finalY, options, xpos, ypos) {
 
 //sorts and update relation lines
 async function sort_and_update_lines() {
-    let sort_iterations = 10;
+    let sort_iterations = 100;
     //simulate n steps of sort
+    let drawRanks = Object.keys(treeTax.visible_lbr);
+    console.log(drawRanks);
+    drawRanks.forEach(rankName => {
+
     for (let i = 0; i < sort_iterations; i++) {
+        //reset p value of all nodes
+        globalResetP(treeTax)
+        globalResetP(treeTax)
         //calculate forces for this step
+        if (interface_variables.split)
         updateP(
             initOptions,
             lines.splits,
             targetDispLefTree,
             targetDispRightTree
         );
+        if (interface_variables.merge)
         updateP(
             initOptions,
             lines.merges,
             targetDispLefTree,
             targetDispRightTree
         );
+        if (interface_variables.rename)
         updateP(
             initOptions,
             lines.renames,
             targetDispLefTree,
             targetDispRightTree
         );
+        if (interface_variables.congruence)
         updateP(
             initOptions,
             lines.equals,
             targetDispLefTree,
             targetDispRightTree
         );
+        if (interface_variables.move)
         updateP(
             initOptions,
             lines.moves,
@@ -1481,7 +1510,9 @@ async function sort_and_update_lines() {
         );
 
         //calculates a simulation step of physical atraction btwen nodes
-        sort_all_lines(targetDispLefTree, targetDispRightTree);
+        //sort_all_lines(targetDispLefTree, targetDispRightTree);
+        universal_sort(treeTax,rankName);
+        universal_sort(treeTax2,rankName);
         recalculateTree(treeTax, initOptions, function() {
             return;
         });
@@ -1489,6 +1520,10 @@ async function sort_and_update_lines() {
             return;
         });
     }
+
+
+    }
+    )
 
     //create groups for hierarchical edge bundling
     let left_pos = { x: initOptions.separation, y: 0 + dispLefTree };
@@ -1652,16 +1687,23 @@ async function resetTrees() {
     proccesByLevel(treeTax, resetSort);
     proccesByLevel(treeTax2, resetSort);
 
-    toggleNode(treeTax, false);
-    toggleNode(treeTax2, true);
 
     toggleNode(treeTax, false);
     toggleNode(treeTax2, true);
+    
+    toggleNode(treeTax, false);
+    toggleNode(treeTax2, true);
+
     //when moving nodes this should be done
     forceRenderUpdate(initOptions);
     targetDispLefTree = 0;
     targetDispRightTree = 0;
     yPointer = 0;
+
+    focusNode = treeTax;
+
+
+
 }
 
 //not working properly

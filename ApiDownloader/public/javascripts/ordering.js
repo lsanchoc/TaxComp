@@ -111,6 +111,109 @@ function sort_lines(actual_lines, yPosL, yPosR) {
     });
 }
 
+
+//moves nodes in all levels
+function universal_sort(tax,rank){
+    proccesByLevel(tax,
+        (node)=>{
+            if(node.c){
+                if(node.r.toLowerCase() == rank.toLowerCase())
+                simulate(node.c);
+            }    
+        }
+        )
+}
+
+
+
+function forceSort(nodes,blockSize){
+    //sort block size
+    var newArray = [];
+    while(nodes.length > 0){
+        var piece = nodes.splice(0,blockSize);
+        piece.sort(comparePValue);
+        newArray = newArray.concat(piece);
+    }
+    return newArray;
+}
+
+function simulate(nodes, maxMovement){
+    var visited = new Set();
+
+    for(var i = 0 ; i< nodes.length; i++){
+        var node = nodes[i];
+        if(visited.has(node)) continue;
+        if(node.p > 0 && (i+2 < nodes.length && nodes[i+2].p < node.p )){
+            var newIndex = i + 2;
+            newIndex = Math.max(newIndex, 0);
+            newIndex = Math.min(newIndex, nodes.length - 2);
+            
+            //remove node form parent
+            nodes.splice(i, 1);
+            //reposition item on array node
+            nodes.splice(newIndex, 0, node);
+
+        }else if(node.p < 0 && (i+2 < nodes.length && nodes[i+2].p > node.p ) ){
+            var newIndex = i - 2;
+            newIndex = Math.max(newIndex, 0);
+            newIndex = Math.min(newIndex, nodes.length - 2);
+
+            //remove node form parent
+            nodes.splice(i, 1);
+            //reposition item on array node
+            nodes.splice(newIndex, 0, node);
+        }
+
+        visited.add(node);
+    }
+
+
+}
+
+function comparePValue( a, b ) {
+    if ( a.p < b.p ){
+      return -1;
+    }
+    if ( a.p > b.p ){
+      return +1;
+    }
+    return 0;
+  }
+  
+
+
+function comparePValueLeft( a, b ) {
+  if ( a.p < b.p ){
+    return -1;
+  }
+  if ( a.p > b.p ){
+    return 1;
+  }
+  return 0;
+}
+
+
+function comparePValueRight( a, b ) {
+    if ( a.p < b.p ){
+      return 1;
+    }
+    if ( a.p > b.p ){
+      return -1;
+    }
+    return 0;
+  }
+
+
+
+function globalResetP(tree){
+    proccesByLevel(
+        tree,
+        (node)=>{
+            node.p = 0;
+        }
+    )
+}
+
 //pValue is 0 by dafault
 //by doing multiple iterations results can be improved
 function updateP(options, p_lines, yPosL, yPosR) {
@@ -119,6 +222,8 @@ function updateP(options, p_lines, yPosL, yPosR) {
         line.o.p = 0;
         line.t.p = 0;
     });
+
+
 
     p_lines.forEach(function(line) {
         let distance = line.o.y + yPosL - (line.t.y + yPosR); //vertical distance betwen the two nodes
@@ -130,6 +235,21 @@ function updateP(options, p_lines, yPosL, yPosR) {
         let force = direction * Math.abs(distance) * options.atractionForce;
         line.t.p += force; /* line.a*/ //a es la cantidad de lineas representadas por ese nodo
         line.o.p -= force;
+
+        //add p value to parents
+        line.t.f.forEach(
+            (parentNode)=>{
+                parentNode.p  += force;
+            }
+        )
+
+        //add p value to parents
+        line.o.f.forEach(
+            (parentNode)=>{
+                parentNode.p  -= force;
+            }
+        )
+
         //console.log(line.o.n,line.t.n,distance,line.a ,line.o.p,line.t.p);
     });
 
@@ -139,13 +259,13 @@ function updateP(options, p_lines, yPosL, yPosR) {
 //sort node children in alphabetical order
 //requires to rerender because nodes are disordered
 function resetSort(node) {
-    console.log('sorting node');
+    //console.log('sorting node');
     node.c.sort((a, b) => {
         if (a.n < b.n) {
-            return -1;
+            return 1;
         }
         if (a.n > b.n) {
-            return 1;
+            return -1;
         }
         return 0;
     });
