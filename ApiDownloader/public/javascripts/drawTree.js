@@ -288,6 +288,7 @@ function setup() {
         targetDispLefTree,
         targetDispRightTree,
     });
+   
 
     //make canvas size dynamic
     canvas = createCanvas(
@@ -344,11 +345,39 @@ function keyPressed(){
 //processing function to detect mouse wheel movement used to move the visualization
 function mouseWheel(event) {
     yPointer -= event.delta * SCROLL_SPEED;
+    var percent = yPointer/getTreeHeight();
+    setScrollVaraible(percent);
+
+
 }
 
 //processing function to detect mouse click, used to turn on a flag
 function mouseClicked() {
     click = true;
+}
+
+function getTreeHeight(){
+    var maxY = 0;
+    Object.keys(treeTax.visible_lbr).forEach(
+        (key)=>{
+            nodeList = treeTax.visible_lbr[key]
+            if(nodeList.length>0){
+                maxY = Math.max(maxY, nodeList[nodeList.length-1].y);
+            }
+        }
+    )
+
+    Object.keys(treeTax2.visible_lbr).forEach(
+        (key)=>{
+            nodeList = treeTax2.visible_lbr[key]
+            if(nodeList.length>0){
+                maxY = Math.max(maxY, nodeList[nodeList.length-1].y);
+            }
+        }
+    )
+
+    return maxY;
+
 }
 
 //processing function to detect window change in size
@@ -365,6 +394,12 @@ function windowResized() {
 
 //processing function to draw on canvas, executed at a fixed rate, normaly 30 times per second
 function draw() {
+    //interface scrolling
+    //console.log(yPointer/getTreeHeight() , interface_variables.scroll)
+    if(yPointer/getTreeHeight() != interface_variables.scroll){
+        yPointer = interface_variables.scroll*getTreeHeight();
+    }
+    
     //smooth node focusing
     dispLefTree = lerp(dispLefTree, targetDispLefTree, 0.1);
     dispRightTree = lerp(dispRightTree, targetDispRightTree, 0.1);
@@ -374,6 +409,8 @@ function draw() {
         x: getWindowWidth() - initOptions.separation,
         y: 0 + dispRightTree,
     };
+
+
 
     //if interface lines changed force update
     if (interface_variables.changedLines) {
