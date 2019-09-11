@@ -206,6 +206,7 @@ var initOptions = {
     dirtyNodes: false, //flag marked when a node is moved in the children array of its parent
     lineTransparency: 0.7,
     lineDispersion: 40,
+    focused: false, //if focused on a node hiddes all lines
 };
 
 //stores the canvas
@@ -287,6 +288,7 @@ function setup() {
         targetDispLefTree,
         targetDispRightTree,
     });
+   
 
     //make canvas size dynamic
     canvas = createCanvas(
@@ -322,7 +324,7 @@ function setup() {
 
     //first line update before drawing
     update_lines(treeTax, false, initOptions);
-    sort_and_update_lines();
+    //sort_and_update_lines();
 
     //filte system
     var filter = new FilterSystem(treeTax, treeTax2);
@@ -333,14 +335,49 @@ function setup() {
 
 }
 
+function keyPressed(){
+    if (key == 'f' ) {
+        initOptions.focused = !initOptions.focused;
+    }
+    
+}
+
 //processing function to detect mouse wheel movement used to move the visualization
 function mouseWheel(event) {
     yPointer -= event.delta * SCROLL_SPEED;
+    var percent = yPointer/getTreeHeight();
+    setScrollVaraible(percent);
+
+
 }
 
 //processing function to detect mouse click, used to turn on a flag
 function mouseClicked() {
     click = true;
+}
+
+function getTreeHeight(){
+    var maxY = 0;
+    Object.keys(treeTax.visible_lbr).forEach(
+        (key)=>{
+            nodeList = treeTax.visible_lbr[key]
+            if(nodeList.length>0){
+                maxY = Math.max(maxY, nodeList[nodeList.length-1].y);
+            }
+        }
+    )
+
+    Object.keys(treeTax2.visible_lbr).forEach(
+        (key)=>{
+            nodeList = treeTax2.visible_lbr[key]
+            if(nodeList.length>0){
+                maxY = Math.max(maxY, nodeList[nodeList.length-1].y);
+            }
+        }
+    )
+
+    return maxY;
+
 }
 
 //processing function to detect window change in size
@@ -357,6 +394,12 @@ function windowResized() {
 
 //processing function to draw on canvas, executed at a fixed rate, normaly 30 times per second
 function draw() {
+    //interface scrolling
+    //console.log(yPointer/getTreeHeight() , interface_variables.scroll)
+    if(yPointer/getTreeHeight() != interface_variables.scroll){
+        yPointer = interface_variables.scroll*getTreeHeight();
+    }
+    
     //smooth node focusing
     dispLefTree = lerp(dispLefTree, targetDispLefTree, 0.1);
     dispRightTree = lerp(dispRightTree, targetDispRightTree, 0.1);
@@ -366,6 +409,8 @@ function draw() {
         x: getWindowWidth() - initOptions.separation,
         y: 0 + dispRightTree,
     };
+
+
 
     //if interface lines changed force update
     if (interface_variables.changedLines) {
@@ -404,7 +449,8 @@ function draw() {
         yPointer,
         left_pos,
         right_pos,
-        interface_variables.bundling
+        interface_variables.bundling,
+        focusNode
     );
 
     //check if we are using bars
@@ -909,9 +955,9 @@ function drawOnlyText(
                 //iterate equivalent nodes
                 if (focusNode === node) focusClick++;
                 else focusClick = 0;
-
+                let index = focusClick % node.equivalent.length;
                 if (isRight) {
-                    let index = focusClick % node.equivalent.length;
+                    
                     targetDispLefTree =
                         node.y - findOpen(node.equivalent[index]).y;
                     yPointer -= targetDispRightTree;
@@ -919,7 +965,6 @@ function drawOnlyText(
                     dispRightTree = 0;
                 } else {
                     /* isLeft! */
-                    let index = focusClick % node.equivalent.length;
                     targetDispRightTree =
                         node.y - findOpen(node.equivalent[index]).y;
                     yPointer -= targetDispLefTree;
@@ -931,87 +976,14 @@ function drawOnlyText(
                 //console.log(focusNode);
                 //console.log(focusClick);
                 forceRenderUpdate(initOptions);
-
-                /*Change table info on click*/
-                totalChanges =
-                    node.totalSplits +
-                    node.totalMerges +
-                    node.totalMoves +
-                    node.totalRenames +
-                    node.totalInsertions +
-                    node.totalRemoves;
-                totalChanges2 =
-                    node.equivalent[0].totalSplits +
-                    node.equivalent[0].totalMerges +
-                    node.equivalent[0].totalMoves +
-                    node.equivalent[0].totalRenames +
-                    node.equivalent[0].totalInsertions +
-                    node.equivalent[0].totalRemoves;
-
-                document.getElementById('table_rank_id').innerHTML =
-                    '<tr><th></th><th>' +
-                    node.n +
-                    '</th><th>' +
-                    node.equivalent[0].n +
-                    '</th></tr>' +
-                    '<tr><th>        </th><th>' +
-                    (node.a != null ? node.a : '') +
-                    ' - ' +
-                    (node.da != null ? node.da : '') +
-                    '</th><th>' +
-                    (node.equivalent[0].a != null ? node.equivalent[0].a : '') +
-                    ' - ' +
-                    (node.equivalent[0].da != null
-                        ? node.equivalent[0].da
-                        : '') +
-                    '</th></tr>' +
-                    '<tr><th>        </th><th>' +
-                    node.ad +
-                    '</th><th>' +
-                    node.equivalent[0].ad +
-                    '</th></tr>' +
-                    '<tr><th>Synonyms</th><th>' +
-                    formatNumber(node.equivalent.length) +
-                    '</th><th>' +
-                    formatNumber(node.equivalent.length) +
-                    '</th> </tr>' +
-                    '<tr><th>Split</th><th>' +
-                    formatNumber(node.totalSplits) +
-                    '</th><th>' +
-                    formatNumber(node.equivalent[0].totalSplits) +
-                    '</th></tr>' +
-                    '<tr><th>Merged</th><th>' +
-                    formatNumber(node.totalMerges) +
-                    '</th><th>' +
-                    formatNumber(node.equivalent[0].totalMerges) +
-                    '</th></tr>' +
-                    '<tr><th>Moved</th><th>' +
-                    formatNumber(node.totalMoves) +
-                    '</th><th>' +
-                    formatNumber(node.equivalent[0].totalMoves) +
-                    '</th></tr>' +
-                    '<tr><th>Renamed</th><th>' +
-                    formatNumber(node.totalRenames) +
-                    '</th><th>' +
-                    formatNumber(node.equivalent[0].totalRenames) +
-                    '</th></tr>' +
-                    '<tr><th>Added</th><th>' +
-                    formatNumber(node.totalInsertions) +
-                    '</th><th>' +
-                    formatNumber(node.equivalent[0].totalInsertions) +
-                    '</th></tr>' +
-                    '<tr><th>Excluded</th><th>' +
-                    formatNumber(node.totalRemoves) +
-                    '</th><th>' +
-                    formatNumber(node.equivalent[0].totalRemoves) +
-                    '</th></tr>' +
-                    '<tr><th>Taxa changed</th><th>' +
-                    formatNumber(totalChanges) +
-                    '</th><th>' +
-                    formatNumber(totalChanges2) +
-                    '</th></tr>'
+                displayNodeData(node,index);
+               
 
                 //console.log(node.n, node.y , findOpen(node.equivalent[0]).y);
+            }else{
+                //if node has not synonimon select it any way
+                diplayOneNodeData(node)
+                focusNode = node;
             }
         }
     } else {
@@ -1694,4 +1666,145 @@ function resetLines() {
         y: 0 + dispRightTree,
     };
     createBundles(left_pos, right_pos, initOptions.bundle_radius);
+}
+
+
+function displayNodeData(node, focusIndex){
+     /*Change table info on click*/
+     totalChanges =
+     node.totalSplits +
+     node.totalMerges +
+     node.totalMoves +
+     node.totalRenames +
+     node.totalInsertions +
+     node.totalRemoves;
+    totalChanges2 =
+     node.equivalent[focusIndex].totalSplits +
+     node.equivalent[focusIndex].totalMerges +
+     node.equivalent[focusIndex].totalMoves +
+     node.equivalent[focusIndex].totalRenames +
+     node.equivalent[focusIndex].totalInsertions +
+     node.equivalent[focusIndex].totalRemoves;
+
+    document.getElementById('table_rank_id').innerHTML =
+    '<tr><th></th><th>' +
+    node.n +
+    '</th><th>' +
+    node.equivalent[focusIndex].n +
+    '</th></tr>' +
+    '<tr><th>        </th><th>' +
+    (node.a != null ? node.a : '') +
+    ' - ' +
+    (node.da != null ? node.da : '') +
+    '</th><th>' +
+    (node.equivalent[focusIndex].a != null ? node.equivalent[focusIndex].a : '') +
+    ' - ' +
+    (node.equivalent[focusIndex].da != null
+        ? node.equivalent[focusIndex].da
+        : '') +
+    '</th></tr>' +
+    '<tr><th>        </th><th>' +
+    node.ad +
+    '</th><th>' +
+    node.equivalent[focusIndex].ad +
+    '</th></tr>' +
+    '<tr><th>Synonyms</th><th>' +
+    formatNumber(node.equivalent.length) +
+    '</th><th>' +
+    formatNumber(node.equivalent.length) +
+    '</th> </tr>' +
+    '<tr><th>Split</th><th>' +
+    formatNumber(node.totalSplits) +
+    '</th><th>' +
+    formatNumber(node.equivalent[focusIndex].totalSplits) +
+    '</th></tr>' +
+    '<tr><th>Merged</th><th>' +
+    formatNumber(node.totalMerges) +
+    '</th><th>' +
+    formatNumber(node.equivalent[focusIndex].totalMerges) +
+    '</th></tr>' +
+    '<tr><th>Moved</th><th>' +
+    formatNumber(node.totalMoves) +
+    '</th><th>' +
+    formatNumber(node.equivalent[focusIndex].totalMoves) +
+    '</th></tr>' +
+    '<tr><th>Renamed</th><th>' +
+    formatNumber(node.totalRenames) +
+    '</th><th>' +
+    formatNumber(node.equivalent[focusIndex].totalRenames) +
+    '</th></tr>' +
+    '<tr><th>Added</th><th>' +
+    formatNumber(node.totalInsertions) +
+    '</th><th>' +
+    formatNumber(node.equivalent[focusIndex].totalInsertions) +
+    '</th></tr>' +
+    '<tr><th>Excluded</th><th>' +
+    formatNumber(node.totalRemoves) +
+    '</th><th>' +
+    formatNumber(node.equivalent[focusIndex].totalRemoves) +
+    '</th></tr>' +
+    '<tr><th>Taxa changed</th><th>' +
+    formatNumber(totalChanges) +
+    '</th><th>' +
+    formatNumber(totalChanges2) +
+    '</th></tr>'
+
+}
+
+function diplayOneNodeData(node){
+     /*Change table info on click*/
+     totalChanges =
+     node.totalSplits +
+     node.totalMerges +
+     node.totalMoves +
+     node.totalRenames +
+     node.totalInsertions +
+     node.totalRemoves;
+  
+    document.getElementById('table_rank_id').innerHTML =
+    '<tr><th></th><th>' +
+    node.n +
+    '</th><th>' +
+    '</th></tr>' +
+    '<tr><th>        </th><th>' +
+    (node.a != null ? node.a : '') +
+    ' - ' +
+    (node.da != null ? node.da : '') +
+    '</th><th>' +
+    '</th></tr>' +
+    '<tr><th>        </th><th>' +
+    node.ad +
+    '</th><th>' +
+    '</th></tr>' +
+    '<tr><th>Synonyms</th><th>' +
+    formatNumber(node.equivalent.length) +
+    '</th><th>' +
+    '</th> </tr>' +
+    '<tr><th>Split</th><th>' +
+    formatNumber(node.totalSplits) +
+    '</th><th>' +
+    '</th></tr>' +
+    '<tr><th>Merged</th><th>' +
+    formatNumber(node.totalMerges) +
+    '</th><th>' +
+    '</th></tr>' +
+    '<tr><th>Moved</th><th>' +
+    formatNumber(node.totalMoves) +
+    '</th><th>' +
+    '</th></tr>' +
+    '<tr><th>Renamed</th><th>' +
+    formatNumber(node.totalRenames) +
+    '</th><th>' +
+    '</th></tr>' +
+    '<tr><th>Added</th><th>' +
+    formatNumber(node.totalInsertions) +
+    '</th><th>' +
+    '</th></tr>' +
+    '<tr><th>Excluded</th><th>' +
+    formatNumber(node.totalRemoves) +
+    '</th><th>' +
+    '</th></tr>' +
+    '<tr><th>Taxa changed</th><th>' +
+    formatNumber(totalChanges) +
+    '</th>';
 }

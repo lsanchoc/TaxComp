@@ -4,7 +4,7 @@ Some lines are removed and never added back, because the node is closed but only
 
 //for filtering the ranks whose changes are taking in consideration
 var filters = {
-    ranks: ['species', 'infraspecies', 'subspecies'],
+    ranks: ['species', 'infraspecies', 'subspecies','genus','family'],
 };
 
 //stores all lines of a kind
@@ -103,7 +103,8 @@ function custom_random() {
 }
 
 //draws all lines based on bundles created by bundling function
-function ls_drawLines(options, initialY, leftPos, rightPos, bundling) {
+//hides lines if focused. still iterates through existing lines
+function ls_drawLines(options, initialY, leftPos, rightPos, bundling,focusedNode) {
     curveTightness(0);
     fill(255, 0, 0);
     //draw group data
@@ -111,10 +112,16 @@ function ls_drawLines(options, initialY, leftPos, rightPos, bundling) {
     //seed = 328;
     //draw lines on bundles
     //stores line as with o,t,c,lp,rp
-    var redrawLine = undefined;
+    var redrawLines = [];
+    var focusLines = [];
     lines.groups.forEach(group => {
         //stroke(custom_random()*255,custom_random()*255,custom_random()*255);
         group.l.forEach(line => {
+            //procces only nodes focused if focused variable is on
+            if(options.focused && line.t != focusedNode && line.o != focusedNode){ 
+                return;
+            } 
+            
             var extraStroke = line.t.selected || line.o.selected ? 3 : 0;
 
             strokeWeight(Math.max(Math.min(line.a, 14), 1) + extraStroke); //sets size of line
@@ -126,14 +133,18 @@ function ls_drawLines(options, initialY, leftPos, rightPos, bundling) {
                 x: group.m.x * bundling + newCenter.x * (1 - bundling),
                 y: group.m.y * bundling + newCenter.y * (1 - bundling),
             };
+            //store lines to higligh them on mouse over
             if (line.t.selected || line.o.selected) {
-                redrawLine = {
+                var redrawLine = {
                     l: line,
                     c: newCenter,
                     lp: leftPos,
                     rp: rightPos,
                 };
+                redrawLines.push(redrawLine);
             }
+
+            
             //console.log(line.xe,line.ye)
             newCenter.x += line.xe;
             newCenter.y += line.ye;
@@ -147,18 +158,22 @@ function ls_drawLines(options, initialY, leftPos, rightPos, bundling) {
             );
         });
     });
-    if (redrawLine) {
-        //console.log("redrawing");
-        setLineColor(redrawLine.l, options);
-        strokeWeight(Math.max(Math.min(line.a, 14), 1) + 2);
-        ls_drawTreePointLine(
-            options,
-            redrawLine.l.o,
-            redrawLine.l.t,
-            redrawLine.c,
-            redrawLine.lp,
-            redrawLine.rp
-        );
+    if (redrawLines.length > 0) {
+        redrawLines.forEach(
+            (redrawLine) =>{
+                //console.log("redrawing");
+                setLineColor(redrawLine.l, options);
+                strokeWeight(Math.max(Math.min(line.a, 14), 1) + 2);
+                ls_drawTreePointLine(
+                    options,
+                    redrawLine.l.o,
+                    redrawLine.l.t,
+                    redrawLine.c,
+                    redrawLine.lp,
+                    redrawLine.rp
+                );
+        }
+        )
     }
 }
 
@@ -263,6 +278,7 @@ function drawBezierPoints(x1, y1, x2, y2, x3, y3) {
 //adds and remove lines as needed
 async function update_lines(node, isRight, options) {
     // toggle node if collapsed or not
+
     if (node.collapsed) closeNode(node, isRight, options);
     else openNode(node, isRight, options);
 
@@ -308,7 +324,7 @@ function findParameter(nodeArray, parameter) {
 function updateNodeLines(originalNode, isRight, options) {
     proccesByLevel(originalNode, function(node) {
         //if the node is present on the new
-
+        if(getValueOfRank(node.r) == 7) console.log(node);
         //should not insert repeated lines, insted insert the amount of ocurrences
         if (
             node.equivalent &&
@@ -454,9 +470,10 @@ function updateNodeLines(originalNode, isRight, options) {
                     //console.log("found: " +found);
                 });
             }
+            //if(getValueOfRank(node.r) == 7) console.log(node);
             if (node.moved || findParameter(node.equivalent, 'moved')) {
                 //we found a merge
-                //console.log("merge!!!");
+                console.log("move!!!");
                 node.equivalent.forEach(function(eq, index) {
                     let target = findOpen(eq);
                     var found = false;
