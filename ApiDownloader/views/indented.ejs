@@ -17,6 +17,10 @@
 
   </head>
   <body>
+	<!-- Scroll for tax-->
+	<div class="sideScroll">
+			<input type="range" min="0" max="1000" value="0" oninput="onScrollChange(this.value)" onchange="onScrollChange(this.value)"class="range vertical-lowest-first sideScrollSlider" id="scroll">
+	</div>
 
 	<div class="optionSquare">
 		
@@ -76,12 +80,7 @@
 		</label>
 		</div>
 
-		<div class="encircledBox">
-		<label></label>
-		<label class="switch">
-		<input type="checkbox" name="space"/>
-		</label>
-		</div>
+		<div class="horizontal_separator"></div>
 
 		<div class="encircledBox">
 		<label>Lines</label>
@@ -119,23 +118,28 @@
 		</div>
 
 		<!-- <button type="button" class="matrix"  onclick="onMatrixClicked()"> <img src = "/images/matrixButton.png" ></img></button>-->
-		<button type="button" class="matrix"  onclick="onMatrixClicked()"></button>
-	
+		<button class="buttonsHeader" onclick="onExpand()">Matrix</button>
+		<!--Function comes from drawing system -->
 		<!--Function comes from ordering menu script -->
 		<button type=“button” class="buttonsHeader" onclick="onSalir()">Exit</button>
 
 	</div>
 
 	<div class="main_body left top">
+		<!--<br>
+		<label>Statistics</label>-->
 		<br>
-		<label>Statistics</label>
-		<br><br>
-		<table id="table_taxon_id" class="table_stadistic">
+		<table id="table_title" class="table_statistic">
 		</table>
 		<br>
 		<hr class="separator">
 		<br>
-		<table id="table_rank_id" class="table_stadistic">
+		<table id="table_taxon_id" class="table_statistic">
+		</table>
+		<br>
+		<hr class="separator">
+		<br>
+		<table id="table_rank_id" class="table_statistic">
 		</table>
 
 		<div id="sketch-holder" class="main_body right top">
@@ -151,7 +155,8 @@
 		<p class="infoBody" ></p>
 		</div>
   		<!-- -->
-	
+		
+		
 
   </body>
 </html>

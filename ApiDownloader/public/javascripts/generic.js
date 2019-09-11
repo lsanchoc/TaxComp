@@ -1,5 +1,6 @@
 //breath-frist Traversing of tree
 //calls a function with the nodes that needs to be processed
+
 function proccesByLevel(root, proccesFunction) {
     let pendingNodes = [];
     pendingNodes.push(root);
@@ -73,4 +74,10 @@ function memoryTreeIteration(root, proccesFunction) {
             }
         }
     }
+}
+
+module.exports={
+	"proccesByLevel": proccesByLevel,
+	"proccesByLevelConditional": proccesByLevelConditional,
+	"memoryTreeIteration": memoryTreeIteration,
 }

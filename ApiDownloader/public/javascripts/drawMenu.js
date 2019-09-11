@@ -14,6 +14,7 @@ var interface_variables = {
     move: false,
     bundling: 0.5,
     changedLines: false,
+    scroll: 0,
 };
 
 //Used when the buttton exit is cliked
@@ -82,6 +83,17 @@ function onMoveChange() {
 function onSliderChange(value) {
     interface_variables.bundling = value / 100;
 }
+
+function onScrollChange(value) {
+    console.log(value);
+    interface_variables.scroll = value / 1000;
+}
+
+function setScrollVaraible(value){
+    interface_variables.scroll = value;
+    $('#scroll').val(value*1000);
+}
+
 
 function onMatrixClicked(value) {
     //
