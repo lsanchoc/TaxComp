@@ -42,6 +42,23 @@ document.getElementById('table_title').innerHTML =
     tree2.date +
     '</th></tr>';
 
+document.getElementById('table_synonyms').innerHTML = 
+    '<tr><th></th><th>' +
+    tree.name +
+    '</th><th>' +
+    tree2.name +
+    '</th></tr>' +
+    '<tr><th>        </th><th>' +
+    (tree.author != null ? tree.author : '') +
+    ' - ' +
+    tree.date +
+    '</th><th>' +
+    tree2.author +
+    ' - ' +
+    tree2.date +
+    '</th></tr>';
+
+
 
 document.getElementById('table_taxon_id').innerHTML =
 

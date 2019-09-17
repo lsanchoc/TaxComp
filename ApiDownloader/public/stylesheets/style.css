@@ -396,11 +396,11 @@ outline: none !important;
      width: 10px;
      height: 10px;
 background-color: #555;
-     background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4DDBFF), to(#00CCFF));
-     background-image: -webkit-linear-gradient(right, #4DDBFF, #00CCFF);
-     background-image: -moz-linear-gradient(right, #4DDBFF, #00CCFF);
-     background-image: -ms-linear-gradient(right, #4DDBFF, #00CCFF);
-     background-image: -o-linear-gradient(right, #4DDBFF, #00CCFF);
+     background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#7f7f7f), to(#7f7f7f));
+     background-image: -webkit-linear-gradient(right, #7f7f7f, #7f7f7f);
+     background-image: -moz-linear-gradient(right, #7f7f7f, #7f7f7f);
+     background-image: -ms-linear-gradient(right, #7f7f7f, #7f7f7f);
+     background-image: -o-linear-gradient(right, #7f7f7f, #7f7f7f);
 }
 
 /*setting round corners to the range */ input[type="range"].round {
@@ -474,14 +474,17 @@ background-color: #555;
 .sideScroll{
   position: fixed;
   top: 0px;
-  right: -140px;
+  right: 0px;
+  left: 80%;
   height: 100%;
-  z-index: 999;
-  
+  z-index: 600;
+  width: 0%;
+  text-align: left;
+
 }
 
 .sideScrollSlider{
-  position: relative;
+  position: fixed;
   top: 50%;
 }
 
@@ -495,14 +498,14 @@ background-color: #555;
 /*customised range slider icon*/ input[type="range"].range::-webkit-slider-thumb
 {
   -webkit-appearance: none;
-  width: 10px;
+  width: 50px;
   height: 10px;
   background-color: #555;
-  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4DDBFF), to(#00CCFF));
-  background-image: -webkit-linear-gradient(right, #4DDBFF, #00CCFF);
-  background-image: -moz-linear-gradient(right, #4DDBFF, #00CCFF);
-  background-image: -ms-linear-gradient(right, #4DDBFF, #00CCFF);
-  background-image: -o-linear-gradient(right, #4DDBFF, #00CCFF);
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#7f7f7f), to(#7f7f7f));
+  background-image: -webkit-linear-gradient(right, #7f7f7f, #7f7f7f);
+  background-image: -moz-linear-gradient(right, #7f7f7f, #7f7f7f);
+  background-image: -ms-linear-gradient(right, #7f7f7f, #7f7f7f);
+  background-image: -o-linear-gradient(right, #7f7f7f, #7f7f7f);
 }
 
 /*setting round corners to the range */ input[type="range"].round {
