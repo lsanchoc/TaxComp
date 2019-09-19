@@ -291,11 +291,16 @@ treeTax2.visible_lbr = {
     infraspecies: [],
     subspecies: [],
 };
+//this stores filter build on setup for search functionaliity
+var filterSystem;
 
 /*This function reasign value of windowWith due to the division*/
 function getWindowWidth() {
     return windowWidth - windowWidth * 0.2;
 }
+
+
+
 
 //processing function executed before the first draw
 function setup() {
@@ -344,12 +349,9 @@ function setup() {
     //sort_and_update_lines();
 
     //filte system
-    var filter = new FilterSystem(treeTax, treeTax2);
+    filterSystem = new FilterSystem(treeTax, treeTax2);
 
-    console.log(filter.getClosestKey('treu'));
-    console.log(filter.getTopNKeys(3, 'treu'));
-    console.log(filter.queryTaxons(null, 'treu'));
-
+    autocomplete("taxSearch",filterSystem)
 }
 
 function keyPressed(){
@@ -967,41 +969,7 @@ function drawOnlyText(
 
         //if mouse is over and the button clicked
         if (click) {
-            //focus the equivalent node on the other side
-            if (node.equivalent && node.equivalent.length > 0) {
-                //iterate equivalent nodes
-                if (focusNode === node) focusClick++;
-                else focusClick = 0;
-                let index = focusClick % node.equivalent.length;
-                if (isRight) {
-                    
-                    targetDispLefTree =
-                        node.y - findOpen(node.equivalent[index]).y;
-                    yPointer -= targetDispRightTree;
-                    targetDispRightTree = 0;
-                    dispRightTree = 0;
-                } else {
-                    /* isLeft! */
-                    targetDispRightTree =
-                        node.y - findOpen(node.equivalent[index]).y;
-                    yPointer -= targetDispLefTree;
-                    targetDispLefTree = 0;
-                    dispLefTree = 0;
-                }
-
-                focusNode = node;
-                //console.log(focusNode);
-                //console.log(focusClick);
-                forceRenderUpdate(initOptions);
-                displayNodeData(node,index);
-               
-
-                //console.log(node.n, node.y , findOpen(node.equivalent[0]).y);
-            }else{
-                //if node has not synonimon select it any way
-                diplayOneNodeData(node)
-                focusNode = node;
-            }
+            visualFocus(node,isRight)
         }
     } else {
         node.selected = false;
@@ -1014,6 +982,46 @@ function drawOnlyText(
     node.tw = textWidth(displayText); //update textwidht required on other modules
     text(displayText, node.x + 5 + xpos, ypos + node.y + 15); //draw the text !!!!
     textSize(options.text_size);
+}
+
+
+function visualFocus(node,isRight){
+    //focus the equivalent node on the other side
+    if (node.equivalent && node.equivalent.length > 0) {
+        //iterate equivalent nodes
+        if (focusNode === node) focusClick++;
+        else focusClick = 0;
+        let index = focusClick % node.equivalent.length;
+        if (isRight) {
+            
+            targetDispLefTree =
+            node.y - findOpen(node.equivalent[index]).y;
+            yPointer -= targetDispRightTree;
+            targetDispRightTree = 0;
+            dispRightTree = 0;
+        } else {
+            /* isLeft! */
+            targetDispRightTree =
+                node.y - findOpen(node.equivalent[index]).y;
+            yPointer -= targetDispLefTree;
+            targetDispLefTree = 0;
+            dispLefTree = 0;
+        }
+
+        focusNode = node;
+        //console.log(focusNode);
+        //console.log(focusClick);
+        forceRenderUpdate(initOptions);
+        displayNodeData(node,index);
+       
+
+        //console.log(node.n, node.y , findOpen(node.equivalent[0]).y);
+    }else{
+        //if node has not synonimon select it any way
+        diplayOneNodeData(node)
+        focusNode = node;
+    }
+    
 }
 
 //draw the button that can open or close nodes
@@ -1600,6 +1608,33 @@ function openParents(node, isRight) {
     });
 }
 
+function findNode(name){
+    var nodes = filterSystem.queryTaxons(undefined,name);
+    if(nodes.length <= 0) return 
+    var node = nodes[0];
+    var isRight = checkRight(node);
+    //open parents
+    openParents(node,isRight)
+    //open equivalent parents
+    node.equivalent.forEach(
+        (eqNode)=>{
+            openParents(eqNode,checkRight(eqNode))
+        }
+    )
+    
+    
+
+    //move to node position
+    yPointer = node.y - height/2;
+    var percent = yPointer/getTreeHeight();
+    setScrollVaraible(percent);
+
+    //focus node
+    visualFocus(node,isRight)
+
+}
+
+
 //scale toggle is unecesary in most cases if it can be ensured that parent nodes are opne
 //is unecesary
 function synchronizedSetState(node, isRight, state) {
@@ -1794,7 +1829,7 @@ function diplayOneNodeData(node){
     '</th><th>' +
     '</th></tr>' +
     '<tr><th>Synonyms</th><th>' +
-    formatNumber(node.equivalent.length) +
+    formatNumber(node.equivalent ? node.equivalent.length : 0) +
     '</th><th>' +
     '</th> </tr>' +
     '<tr><th>Split</th><th>' +

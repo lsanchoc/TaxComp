@@ -324,7 +324,7 @@ function findParameter(nodeArray, parameter) {
 function updateNodeLines(originalNode, isRight, options) {
     proccesByLevel(originalNode, function(node) {
         //if the node is present on the new
-        if(getValueOfRank(node.r) == 7) console.log(node);
+        //if(getValueOfRank(node.r) == 7) console.log(node);
         //should not insert repeated lines, insted insert the amount of ocurrences
         if (
             node.equivalent &&
