@@ -1601,11 +1601,33 @@ function setNode(node, isRight, collapsed) {
 }
 
 function openParents(node, isRight) {
+
+    /*for(var i = node.f.length-1; i >= 0; i--){
+        var familiar = node.f[i];
+        if (familiar.collapsed) {
+            setNode(familiar, isRight, false);
+        }
+
+    }*/
+    
     node.f.forEach(familiar => {
         if (familiar.collapsed) {
             setNode(familiar, isRight, false, true);
         }
     });
+
+}
+
+function openParentsAndUpdate(node) {
+
+    for(var i = node.f.length-1; i >= 0; i--){
+        var familiar = node.f[i];
+        if (familiar.collapsed) {
+            toggleNode(familiar,!checkRight(familiar))
+        }
+
+    }
+    
 }
 
 function findNode(name){
@@ -1613,12 +1635,15 @@ function findNode(name){
     if(nodes.length <= 0) return 
     var node = nodes[0];
     var isRight = checkRight(node);
+
     //open parents
-    openParents(node,isRight)
-    //open equivalent parents
+    //if(node.collapsed) openParentsAndUpdate(node,isRight)
+    openParentsAndUpdate(node)
+    
+
     node.equivalent.forEach(
         (eqNode)=>{
-            openParents(eqNode,checkRight(eqNode))
+            openParentsAndUpdate(eqNode)
         }
     )
     
@@ -1628,9 +1653,21 @@ function findNode(name){
     yPointer = node.y - height/2;
     var percent = yPointer/getTreeHeight();
     setScrollVaraible(percent);
+    
+
+
+    //rebundle all lines
+    let left_pos = { x: initOptions.separation, y: 0 + dispLefTree };
+    let right_pos = {
+        x: getWindowWidth() - initOptions.separation,
+        y: 0 + dispRightTree,
+    };
+    createBundles(left_pos, right_pos, initOptions.bundle_radius);
+
 
     //focus node
     visualFocus(node,isRight)
+    forceRenderUpdate(initOptions);
 
 }
 
@@ -1707,6 +1744,7 @@ async function resetTrees() {
 
 
 }
+
 
 //not working properly
 function resetLines() {

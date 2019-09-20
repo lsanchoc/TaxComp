@@ -5,7 +5,6 @@ class FilterSystem {
 
         //function binding
         this.addKey = this.addKey.bind(this);
-        this.getTaxons = this.getTaxons.bind(this);
 
         this.buildQuerySystem(tree1, tree2);
     }
@@ -21,39 +20,39 @@ class FilterSystem {
     }
 
     addKey(node) {
-        let keyArray = node.n.split(' ');
+        let name = node.n.toLowerCase();
 
         //object of the node three that enables search
         //let actualLevel = this.dataStruct;
         let myself = this;
        
-        keyArray.forEach(keyName => {
-            //add key to key list
-            if (!myself.keys.has(keyName)) {
-                myself.keys.add(keyName);
-                myself.dataStruct[keyName] = new Set();
-            }
-            myself.dataStruct[keyName].add(node);
-        });
+        if (!myself.keys.has(name)) {
+            myself.keys.add(name);
+            myself.dataStruct[name] = new Set();
+        }
+        myself.dataStruct[name].add(node);
+    
     }
 
     queryTaxons(rank, name) {
-        let keys = name.split(' ');
-        let results = [];
+        //let keys = name.split(' ');
+        //let results = [];
         let myself = this;
-        keys.forEach(rawKey => {
-            var goalKey = myself.getClosestKey(rawKey);
-            results.push(myself.dataStruct[goalKey]);
-        });
+        //keys.forEach(rawKey => {
+        //    var goalKey = myself.getClosestKey(rawKey);
+        //    results.push(myself.dataStruct[goalKey]);
+        //});
 
+        var key = myself.getClosestKey(name);
+        var results = myself.dataStruct[key];
         let finalResult = results[0];
         print(results)
         //intersection
-        for (var i = 1; i < results.length; i++) {
+        /*for (var i = 1; i < results.length; i++) {
             finalResult = new Set(
                 [...finalResult].filter(x => results[i].has(x))
             );
-        }
+        }*/
 
         /*if (rank) {
             finalResult = new Set(
@@ -63,20 +62,20 @@ class FilterSystem {
             );
         }*/
 
-        finalResult = Array.from(finalResult);
+        //finalResult = Array.from(finalResult);
 
-        print(this.keys.has("Clitellata"))
+        //print(this.keys.has("Clitellata"))
 
-        return finalResult;
+        return Array.from(results);
     }
 
 
     queryXTaxons(number,rank, name) {
-        let keys = name.split(' ');
         let results = [];
         let myself = this;
 
         var goalKeys = myself.getTopNKeys(4,name);
+        console.log(goalKeys)
         //print(goalKeys)
         goalKeys.forEach(
             (goalKey) =>{
@@ -139,8 +138,6 @@ class FilterSystem {
 
     //the search magic ocurs here
     getClosestKey(rawString) {
-        let keyArray = Array.from(this.keys);
-        
 
         let bestKey = undefined;
         let maxVal = 0;
@@ -162,7 +159,6 @@ class FilterSystem {
         let bestKeys = [];
         let maxVal = 0;
         //print(this.keys)
-
         for (const actualKey of this.keys) {
             var similarityValue = JaroWrinker(actualKey, rawString);
 
@@ -183,11 +179,6 @@ class FilterSystem {
         return bestKeys;
     }
 
-    getTaxons(key){
-
-        return this.dataStruct[key];
-        
-    }
 }
 
 //similarity function from
