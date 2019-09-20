@@ -216,7 +216,8 @@ var initOptions = {
     'merge-color': '#FFA452', //color of merge nodes used in lines and text
     'rename-color': '#1700E7', //color of rename nodes used in lines and text
     'move-color': '#09D3D3', //color of move nodes used in lines and text
-    'equal-color': '#e8e8e8', //color of congruence nodes used in lines and text
+    'equal-color': '#a6a6a6', //color of congruence nodes used in lines and text
+    //this color was changed to improve line visibility
     'focus-color': '#50500020', //color of text when a node is clicked
     atractionForce: 0.01, // force by pixel distance causes movement of nodes
     bundle_radius: 60, //radius in pixel to create bundles

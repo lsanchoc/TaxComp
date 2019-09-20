@@ -132,6 +132,8 @@ function ls_drawLines(options, initialY, leftPos, rightPos, bundling,focusedNode
                 x: group.m.x * bundling + newCenter.x * (1 - bundling),
                 y: group.m.y * bundling + newCenter.y * (1 - bundling),
             };
+
+            //console.log(line)
             //store lines to higligh them on mouse over
             if (line.t.selected || line.o.selected) {
                 var redrawLine = {
@@ -536,6 +538,8 @@ function updateNodeLines(originalNode, isRight, options) {
                                 t: fuente,
                                 a: 1,
                                 c: 'equal',
+                                xe: Math.random() * d,
+                                ye: Math.random() * d
                             });
                         } else {
                             lines.equals.push({
@@ -543,6 +547,8 @@ function updateNodeLines(originalNode, isRight, options) {
                                 t: target,
                                 a: 1,
                                 c: 'equal',
+                                xe: Math.random() * d,
+                                ye: Math.random() * d
                             });
                         }
                     }
