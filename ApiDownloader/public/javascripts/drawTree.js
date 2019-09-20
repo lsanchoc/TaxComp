@@ -448,6 +448,19 @@ function draw() {
     //draws based on the current window size
     let base_y = getWindowWidth() / 2 - initOptions.width / 2;
 
+
+
+    //bundling comes from draw_menu js
+    //Draw current visible lines
+    ls_drawLines(
+        initOptions,
+        yPointer,
+        left_pos,
+        right_pos,
+        interface_variables.bundling,
+        focusNode
+    );
+    
     //Draw function, this draws the indented-treeTax
     optimizedDrawIndentedTree(
         treeTax.visible_lbr,
@@ -464,16 +477,7 @@ function draw() {
         true
     );
 
-    //bundling comes from draw_menu js
-    //Draw current visible lines
-    ls_drawLines(
-        initOptions,
-        yPointer,
-        left_pos,
-        right_pos,
-        interface_variables.bundling,
-        focusNode
-    );
+    
 
     //check if we are using bars
     //this is basicaly a switch when changed executes code
