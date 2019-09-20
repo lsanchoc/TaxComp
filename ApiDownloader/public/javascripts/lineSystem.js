@@ -34,7 +34,6 @@ function clearLines() {
 //when variables are changed we require to update bundles
 function get_all_lines() {
     let all_lines = [];
-
     if (interface_variables.congruence) {
         all_lines = all_lines.concat(lines.equals);
     }
@@ -432,8 +431,8 @@ function updateNodeLines(originalNode, isRight, options) {
                 });
             }
             if (node.rename || findParameter(node.equivalent, 'rename')) {
-                //we found a merge
-                //console.log("merge!!!");
+                //we found a rename
+                //console.log("rename!!!");
                 node.equivalent.forEach(function(eq, index) {
                     let target = findOpen(eq);
                     var found = false;
@@ -472,8 +471,8 @@ function updateNodeLines(originalNode, isRight, options) {
             }
             //if(getValueOfRank(node.r) == 7) console.log(node);
             if (node.moved || findParameter(node.equivalent, 'moved')) {
-                //we found a merge
-                console.log("move!!!");
+                //we found a move
+                //console.log("move!!!");
                 node.equivalent.forEach(function(eq, index) {
                     let target = findOpen(eq);
                     var found = false;
@@ -517,7 +516,7 @@ function updateNodeLines(originalNode, isRight, options) {
                 node.equivalent[0].equivalent.length == 1
             ) {
                 //we found equality
-                //console.log("merge!!!");
+                //console.log("equal!!!");
                 node.equivalent.forEach(function(eq, index) {
                     let target = findOpen(eq);
                     var found = false;

@@ -202,7 +202,7 @@ var initOptions = {
     hierarchy_distance: 700, //distance betwen hierarchys deprecated
     width: 350, //indented-treeTax height
     height: 500, //indented-treeTax height
-    separation: 100, //Separation betwen indented-treeTax and the size of the screen
+    separation: 70, //Separation betwen indented-treeTax and the size of the screen
     'background-color': undefined, //color of the background
     'stroke-color': undefined,
     'indent-stroke': 0.5, // weight of indent iine
@@ -355,8 +355,10 @@ function setup() {
 }
 
 function keyPressed(){
-    if (key == 'f' ) {
-        initOptions.focused = !initOptions.focused;
+
+    
+    if (keyCode == ALT) {
+            initOptions.focused = !initOptions.focused;
     }
     
 }
@@ -1619,16 +1621,17 @@ function openParents(node, isRight) {
 }
 
 function openParentsAndUpdate(node) {
-
+    console.log(checkRight(node),node.x)
     for(var i = node.f.length-1; i >= 0; i--){
         var familiar = node.f[i];
         if (familiar.collapsed) {
-            toggleNode(familiar,!checkRight(familiar))
+            toggleNode(familiar,checkRight(familiar))
         }
 
     }
     
 }
+
 
 function findNode(name){
     var nodes = filterSystem.queryTaxons(undefined,name);
@@ -1638,15 +1641,22 @@ function findNode(name){
 
     //open parents
     //if(node.collapsed) openParentsAndUpdate(node,isRight)
-    openParentsAndUpdate(node)
     
+    
+    
+    if(node.equivalent.length > 0){
+        scaleToggleNode(node,isRight)
+        
+        node.equivalent.forEach(
+            (eqNode)=>{
+                scaleToggleNode(eqNode,!isRight)
+                //openParentsAndUpdate(eqNode)
+            }
+        )
 
-    node.equivalent.forEach(
-        (eqNode)=>{
-            openParentsAndUpdate(eqNode)
-        }
-    )
-    
+    }else{
+        openParentsAndUpdate(node);
+    }
     
 
     //move to node position
@@ -1654,7 +1664,6 @@ function findNode(name){
     var percent = yPointer/getTreeHeight();
     setScrollVaraible(percent);
     
-
 
     //rebundle all lines
     let left_pos = { x: initOptions.separation, y: 0 + dispLefTree };
@@ -1718,7 +1727,8 @@ function expandAllLevels() {
 //requires that node position has been given at least onece
 //could acend and ask question to root to remove this limitation
 function checkRight(node) {
-    return node.x > getWindowWidth() / 2;
+    return node.x < 0;
+    //due to translate the center of the screnn is 0
 }
 
 async function resetTrees() {
