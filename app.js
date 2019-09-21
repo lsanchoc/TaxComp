@@ -58,7 +58,7 @@ module.exports = app;
 
 
 
-
+/*
 
 //cross domain proxy
 // Listen on a specific host via the HOST environment variable
@@ -75,7 +75,7 @@ cors_proxy.createServer({
     console.log('Running CORS Anywhere on ' + host + ':' + port);
 });
 
-
+*/
 
 
 
