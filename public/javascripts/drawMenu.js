@@ -1,4 +1,5 @@
-const loadingUrl = 'http://localhost:3000/';
+//user origin as root url
+const loadingUrl = window.location.origin;
 
 //this variables are accesed all over the code to enable or disable features
 var interface_variables = {
