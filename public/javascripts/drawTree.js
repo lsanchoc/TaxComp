@@ -184,7 +184,7 @@ if (!treeTax || !treeTax2) {
 
 //all options that can influece how the visualization is displayed
 var initOptions = {
-    defaultSize: 15, //the size of a node
+    defaultSize: 20, //the size of a node
     defaultBarSize: 10, //the size of resume bars
     indent: 30, //indent betwen each rank of hierarchy
     increment: 20, //old color changin parameters
