@@ -186,3 +186,14 @@ function countChildren(root) {
         });
     });
 }
+
+//returns an array of node names
+function getAllNames(root){
+    names = new Set();
+
+    proccesByLevel(root, function(node) {
+        mySet.add(node.n)
+    });
+
+    return Array.from(names)
+}

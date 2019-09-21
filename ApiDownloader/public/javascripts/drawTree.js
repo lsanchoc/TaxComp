@@ -184,7 +184,7 @@ if (!treeTax || !treeTax2) {
 
 //all options that can influece how the visualization is displayed
 var initOptions = {
-    defaultSize: 20, //the size of a node
+    defaultSize: 15, //the size of a node
     defaultBarSize: 10, //the size of resume bars
     indent: 30, //indent betwen each rank of hierarchy
     increment: 20, //old color changin parameters
@@ -202,7 +202,7 @@ var initOptions = {
     hierarchy_distance: 700, //distance betwen hierarchys deprecated
     width: 350, //indented-treeTax height
     height: 500, //indented-treeTax height
-    separation: 100, //Separation betwen indented-treeTax and the size of the screen
+    separation: 70, //Separation betwen indented-treeTax and the size of the screen
     'background-color': undefined, //color of the background
     'stroke-color': undefined,
     'indent-stroke': 0.5, // weight of indent iine
@@ -216,7 +216,8 @@ var initOptions = {
     'merge-color': '#FFA452', //color of merge nodes used in lines and text
     'rename-color': '#1700E7', //color of rename nodes used in lines and text
     'move-color': '#09D3D3', //color of move nodes used in lines and text
-    'equal-color': '#e8e8e8', //color of congruence nodes used in lines and text
+    'equal-color': '#a6a6a6', //color of congruence nodes used in lines and text
+    //this color was changed to improve line visibility
     'focus-color': '#50500020', //color of text when a node is clicked
     atractionForce: 0.01, // force by pixel distance causes movement of nodes
     bundle_radius: 60, //radius in pixel to create bundles
@@ -291,11 +292,16 @@ treeTax2.visible_lbr = {
     infraspecies: [],
     subspecies: [],
 };
+//this stores filter build on setup for search functionaliity
+var filterSystem;
 
 /*This function reasign value of windowWith due to the division*/
 function getWindowWidth() {
     return windowWidth - windowWidth * 0.2;
 }
+
+
+
 
 //processing function executed before the first draw
 function setup() {
@@ -344,17 +350,16 @@ function setup() {
     //sort_and_update_lines();
 
     //filte system
-    var filter = new FilterSystem(treeTax, treeTax2);
+    filterSystem = new FilterSystem(treeTax, treeTax2);
 
-    console.log(filter.getClosestKey('treu'));
-    console.log(filter.getTopNKeys(3, 'treu'));
-    console.log(filter.queryTaxons(null, 'treu'));
-
+    autocomplete("taxSearch",filterSystem)
 }
 
 function keyPressed(){
-    if (key == 'f' ) {
-        initOptions.focused = !initOptions.focused;
+
+    
+    if (keyCode == TAB) {
+            initOptions.focused = !initOptions.focused;
     }
     
 }
@@ -443,6 +448,19 @@ function draw() {
     //draws based on the current window size
     let base_y = getWindowWidth() / 2 - initOptions.width / 2;
 
+
+
+    //bundling comes from draw_menu js
+    //Draw current visible lines
+    ls_drawLines(
+        initOptions,
+        yPointer,
+        left_pos,
+        right_pos,
+        interface_variables.bundling,
+        focusNode
+    );
+    
     //Draw function, this draws the indented-treeTax
     optimizedDrawIndentedTree(
         treeTax.visible_lbr,
@@ -459,16 +477,7 @@ function draw() {
         true
     );
 
-    //bundling comes from draw_menu js
-    //Draw current visible lines
-    ls_drawLines(
-        initOptions,
-        yPointer,
-        left_pos,
-        right_pos,
-        interface_variables.bundling,
-        focusNode
-    );
+    
 
     //check if we are using bars
     //this is basicaly a switch when changed executes code
@@ -967,41 +976,7 @@ function drawOnlyText(
 
         //if mouse is over and the button clicked
         if (click) {
-            //focus the equivalent node on the other side
-            if (node.equivalent && node.equivalent.length > 0) {
-                //iterate equivalent nodes
-                if (focusNode === node) focusClick++;
-                else focusClick = 0;
-                let index = focusClick % node.equivalent.length;
-                if (isRight) {
-                    
-                    targetDispLefTree =
-                        node.y - findOpen(node.equivalent[index]).y;
-                    yPointer -= targetDispRightTree;
-                    targetDispRightTree = 0;
-                    dispRightTree = 0;
-                } else {
-                    /* isLeft! */
-                    targetDispRightTree =
-                        node.y - findOpen(node.equivalent[index]).y;
-                    yPointer -= targetDispLefTree;
-                    targetDispLefTree = 0;
-                    dispLefTree = 0;
-                }
-
-                focusNode = node;
-                //console.log(focusNode);
-                //console.log(focusClick);
-                forceRenderUpdate(initOptions);
-                displayNodeData(node,index);
-               
-
-                //console.log(node.n, node.y , findOpen(node.equivalent[0]).y);
-            }else{
-                //if node has not synonimon select it any way
-                diplayOneNodeData(node)
-                focusNode = node;
-            }
+            visualFocus(node,isRight)
         }
     } else {
         node.selected = false;
@@ -1014,6 +989,46 @@ function drawOnlyText(
     node.tw = textWidth(displayText); //update textwidht required on other modules
     text(displayText, node.x + 5 + xpos, ypos + node.y + 15); //draw the text !!!!
     textSize(options.text_size);
+}
+
+
+function visualFocus(node,isRight){
+    //focus the equivalent node on the other side
+    if (node.equivalent && node.equivalent.length > 0) {
+        //iterate equivalent nodes
+        if (focusNode === node) focusClick++;
+        else focusClick = 0;
+        let index = focusClick % node.equivalent.length;
+        if (isRight) {
+            
+            targetDispLefTree =
+            node.y - findOpen(node.equivalent[index]).y;
+            yPointer -= targetDispRightTree;
+            targetDispRightTree = 0;
+            dispRightTree = 0;
+        } else {
+            /* isLeft! */
+            targetDispRightTree =
+                node.y - findOpen(node.equivalent[index]).y;
+            yPointer -= targetDispLefTree;
+            targetDispLefTree = 0;
+            dispLefTree = 0;
+        }
+
+        focusNode = node;
+        //console.log(focusNode);
+        //console.log(focusClick);
+        forceRenderUpdate(initOptions);
+        displayNodeData(node,index);
+       
+
+        //console.log(node.n, node.y , findOpen(node.equivalent[0]).y);
+    }else{
+        //if node has not synonimon select it any way
+        diplayOneNodeData(node)
+        focusNode = node;
+    }
+    
 }
 
 //draw the button that can open or close nodes
@@ -1051,6 +1066,10 @@ function drawExpandButton(
         //check if clicked
         if (click && !changed) {
             synchronizedToggle(node, isRight);
+
+            //keep current position when tree height is changed
+            setScrollVaraible(yPointer/getTreeHeight())
+            //yPointer = interface_variables.scroll*getTreeHeight();
         }
         forceRenderUpdate(options);
     }
@@ -1593,12 +1612,83 @@ function setNode(node, isRight, collapsed) {
 }
 
 function openParents(node, isRight) {
+
+    /*for(var i = node.f.length-1; i >= 0; i--){
+        var familiar = node.f[i];
+        if (familiar.collapsed) {
+            setNode(familiar, isRight, false);
+        }
+
+    }*/
+    
     node.f.forEach(familiar => {
         if (familiar.collapsed) {
             setNode(familiar, isRight, false, true);
         }
     });
+
 }
+
+function openParentsAndUpdate(node) {
+    console.log(checkRight(node),node.x)
+    for(var i = node.f.length-1; i >= 0; i--){
+        var familiar = node.f[i];
+        if (familiar.collapsed) {
+            toggleNode(familiar,checkRight(familiar))
+        }
+
+    }
+    
+}
+
+
+function findNode(name){
+    var nodes = filterSystem.queryTaxons(undefined,name);
+    if(nodes.length <= 0) return 
+    var node = nodes[0];
+    var isRight = checkRight(node);
+
+    //open parents
+    //if(node.collapsed) openParentsAndUpdate(node,isRight)
+    
+    
+    
+    if(node.equivalent.length > 0){
+        scaleToggleNode(node,isRight)
+        
+        node.equivalent.forEach(
+            (eqNode)=>{
+                scaleToggleNode(eqNode,!isRight)
+                //openParentsAndUpdate(eqNode)
+            }
+        )
+
+    }else{
+        openParentsAndUpdate(node);
+    }
+    
+
+    //move to node position
+    yPointer = node.y - height/2;
+    var percent = yPointer/getTreeHeight();
+    setScrollVaraible(percent);
+    
+
+    //rebundle all lines
+    let left_pos = { x: initOptions.separation, y: 0 + dispLefTree };
+    let right_pos = {
+        x: getWindowWidth() - initOptions.separation,
+        y: 0 + dispRightTree,
+    };
+    createBundles(left_pos, right_pos, initOptions.bundle_radius);
+
+
+    //focus node
+    visualFocus(node,isRight)
+    forceRenderUpdate(initOptions);
+
+}
+
 
 //scale toggle is unecesary in most cases if it can be ensured that parent nodes are opne
 //is unecesary
@@ -1640,13 +1730,21 @@ function expandAllLevels() {
     };
     createBundles(left_pos, right_pos, initOptions.bundle_radius);
 
-    console.log({ lines });
+    //update scroll due to height changes
+    keepScrool()
+    //console.log({ lines });
+}
+
+function keepScrool(){
+    //sets scroll acording to yPointer after a change of treeHeight
+    setScrollVaraible(yPointer/getTreeHeight())
 }
 
 //requires that node position has been given at least onece
 //could acend and ask question to root to remove this limitation
 function checkRight(node) {
-    return node.x > getWindowWidth() / 2;
+    return node.x < 0;
+    //due to translate the center of the screnn is 0
 }
 
 async function resetTrees() {
@@ -1672,6 +1770,7 @@ async function resetTrees() {
 
 
 }
+
 
 //not working properly
 function resetLines() {
@@ -1794,7 +1893,7 @@ function diplayOneNodeData(node){
     '</th><th>' +
     '</th></tr>' +
     '<tr><th>Synonyms</th><th>' +
-    formatNumber(node.equivalent.length) +
+    formatNumber(node.equivalent ? node.equivalent.length : 0) +
     '</th><th>' +
     '</th> </tr>' +
     '<tr><th>Split</th><th>' +

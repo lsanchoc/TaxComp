@@ -34,7 +34,6 @@ function clearLines() {
 //when variables are changed we require to update bundles
 function get_all_lines() {
     let all_lines = [];
-
     if (interface_variables.congruence) {
         all_lines = all_lines.concat(lines.equals);
     }
@@ -133,6 +132,8 @@ function ls_drawLines(options, initialY, leftPos, rightPos, bundling,focusedNode
                 x: group.m.x * bundling + newCenter.x * (1 - bundling),
                 y: group.m.y * bundling + newCenter.y * (1 - bundling),
             };
+
+            //console.log(line)
             //store lines to higligh them on mouse over
             if (line.t.selected || line.o.selected) {
                 var redrawLine = {
@@ -324,7 +325,7 @@ function findParameter(nodeArray, parameter) {
 function updateNodeLines(originalNode, isRight, options) {
     proccesByLevel(originalNode, function(node) {
         //if the node is present on the new
-        if(getValueOfRank(node.r) == 7) console.log(node);
+        //if(getValueOfRank(node.r) == 7) console.log(node);
         //should not insert repeated lines, insted insert the amount of ocurrences
         if (
             node.equivalent &&
@@ -432,8 +433,8 @@ function updateNodeLines(originalNode, isRight, options) {
                 });
             }
             if (node.rename || findParameter(node.equivalent, 'rename')) {
-                //we found a merge
-                //console.log("merge!!!");
+                //we found a rename
+                //console.log("rename!!!");
                 node.equivalent.forEach(function(eq, index) {
                     let target = findOpen(eq);
                     var found = false;
@@ -472,8 +473,8 @@ function updateNodeLines(originalNode, isRight, options) {
             }
             //if(getValueOfRank(node.r) == 7) console.log(node);
             if (node.moved || findParameter(node.equivalent, 'moved')) {
-                //we found a merge
-                console.log("move!!!");
+                //we found a move
+                //console.log("move!!!");
                 node.equivalent.forEach(function(eq, index) {
                     let target = findOpen(eq);
                     var found = false;
@@ -517,7 +518,7 @@ function updateNodeLines(originalNode, isRight, options) {
                 node.equivalent[0].equivalent.length == 1
             ) {
                 //we found equality
-                //console.log("merge!!!");
+                //console.log("equal!!!");
                 node.equivalent.forEach(function(eq, index) {
                     let target = findOpen(eq);
                     var found = false;
@@ -537,6 +538,8 @@ function updateNodeLines(originalNode, isRight, options) {
                                 t: fuente,
                                 a: 1,
                                 c: 'equal',
+                                xe: Math.random() * d,
+                                ye: Math.random() * d
                             });
                         } else {
                             lines.equals.push({
@@ -544,6 +547,8 @@ function updateNodeLines(originalNode, isRight, options) {
                                 t: target,
                                 a: 1,
                                 c: 'equal',
+                                xe: Math.random() * d,
+                                ye: Math.random() * d
                             });
                         }
                     }

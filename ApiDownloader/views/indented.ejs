@@ -21,7 +21,7 @@
 	<div class="sideScroll">
 			<input type="range" min="0" max="1000" value="0" oninput="onScrollChange(this.value)" onchange="onScrollChange(this.value)"class="range vertical-lowest-first sideScrollSlider" id="scroll">
 	</div>
-
+	
 	<div class="optionSquare">
 		
 		<div class="encircledBox">	
@@ -128,6 +128,11 @@
 	<div class="main_body left top" overflow-y: scroll;>
 		<!--<br>
 		<label>Statistics</label>-->
+		<div class="autocomplete" style="width:100%;">
+			<input id="taxSearch" type="search">
+			<button onclick="onSearchNode()">Search</button>
+		</div>
+		
 		<br>
 		<table id="table_title" class="table_statistic">
 		</table>
@@ -160,7 +165,5 @@
 		</div>
   		<!-- -->
 		
-		
-
   </body>
 </html>
