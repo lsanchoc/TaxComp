@@ -184,7 +184,7 @@ if (!treeTax || !treeTax2) {
 
 //all options that can influece how the visualization is displayed
 var initOptions = {
-    defaultSize: 20, //the size of a node
+    defaultSize: 15, //the size of a node
     defaultBarSize: 10, //the size of resume bars
     indent: 30, //indent betwen each rank of hierarchy
     increment: 20, //old color changin parameters
@@ -358,7 +358,7 @@ function setup() {
 function keyPressed(){
 
     
-    if (keyCode == ALT) {
+    if (keyCode == TAB) {
             initOptions.focused = !initOptions.focused;
     }
     
@@ -1066,6 +1066,10 @@ function drawExpandButton(
         //check if clicked
         if (click && !changed) {
             synchronizedToggle(node, isRight);
+
+            //keep current position when tree height is changed
+            setScrollVaraible(yPointer/getTreeHeight())
+            //yPointer = interface_variables.scroll*getTreeHeight();
         }
         forceRenderUpdate(options);
     }
@@ -1726,7 +1730,14 @@ function expandAllLevels() {
     };
     createBundles(left_pos, right_pos, initOptions.bundle_radius);
 
-    console.log({ lines });
+    //update scroll due to height changes
+    keepScrool()
+    //console.log({ lines });
+}
+
+function keepScrool(){
+    //sets scroll acording to yPointer after a change of treeHeight
+    setScrollVaraible(yPointer/getTreeHeight())
 }
 
 //requires that node position has been given at least onece
