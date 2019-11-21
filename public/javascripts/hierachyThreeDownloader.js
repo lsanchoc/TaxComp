@@ -3,7 +3,7 @@
 var format = "json" // options are xml or json, probably should not be a global variable
 //se inicia a utilizar el proxy https://cors.io/?
 //var proxyUrl = "http://127.0.0.1:5757/";
-var proxyUrl = "https://cors-anywhere.herokuapp.com/";
+var proxyUrl = "https://cors-taxcomp.herokuapp.com/";
 var especies2000url = "http://webservice.catalogueoflife.org/col"; //direction for current year
 var especies2000urlRaw = "http://www.catalogueoflife.org/annual-checklist/"; //direction that needs year specified
 var queryFlags = "/webservice?format="+format+"&response=full&" //flags to shape the query
